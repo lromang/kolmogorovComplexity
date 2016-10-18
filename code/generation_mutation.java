@@ -4,7 +4,7 @@ import java.lang.Math;
 public class generation_mutation{
 
     public static int length         = 1024;
-    public static int pop            = 1;
+    public static int pop            = 10;
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
     public static int[][] population = new int[pop][length];
@@ -78,6 +78,19 @@ public class generation_mutation{
         }
     }
 
+    /*
+     * ==========================================
+     * MUTATION
+     * ==========================================
+     * 'Mutates' (changes) a random bit of a selected
+     * individual
+     *
+     * IN:
+     *
+     * indMutation (int)  = the id (entry)
+     * of the individual to be mutated
+     *
+     */
     public static void mutation(int indMutation){
         Random randGen = new Random();
         int mute       = showRandomInteger(0, (length - 1), randGen);
@@ -87,7 +100,27 @@ public class generation_mutation{
         population[indMutation][mute] = population[indMutation][mute] ^ 1;
     }
 
-    // Fitness function:
+    /*
+     * ==========================================
+     * FITNESS
+     * ==========================================
+     * Evaluates the 'similarity' between the
+     * bit patterns: string1 and string2.
+     *
+     * IN:
+     *
+     * string1 (int[])  = pattern of 0's and 1's to be
+     * evaluated.
+     *
+     * string2 (int[])  = pattern of 0's and 1's to be
+     * evaluated.
+     *
+     * OUT:
+     *
+     * inter/length     = normalized similarity between
+     * string1 and string2. Inter adds 1 for every matching
+     * bit and substracts 1 for every non-matching bit
+     */
     public static double fitness(int[] string1, int[] string2){
         double inter = 0;
         for(int i = 0; i < string1.length; i++){
@@ -100,7 +133,23 @@ public class generation_mutation{
         return inter/string1.length;
     }
 
-
+    /*
+     * ==========================================
+     * DECODE
+     * ==========================================
+     * Transforms a n bit pattern
+     * into a number.
+     *
+     * IN:
+     *
+     * decode (int[])  = pattern of 0's and 1's to be
+     * transformed into a base 10 number.
+     *
+     * OUT:
+     *
+     * decode (double) = base 10 representation of the
+     * bit pattern.
+     */
     public static double decode(int[] code){
         double decode = 0;
         for(int i = 0; i < code.length; i++){
@@ -110,13 +159,11 @@ public class generation_mutation{
     }
 
     public static void printTape(int[] tape){
-        if(verbose == true){
-            System.out.println("\n=======================");
-            for(int i = 0; i < tape.length; i ++){
-                System.out.print(tape[i]);
-            }
-            System.out.println("\n=======================");
+        System.out.println("");
+        for(int i = 0; i < tape.length; i ++){
+            System.out.print(tape[i]);
         }
+        System.out.println("");
     }
 
     /*
@@ -139,6 +186,7 @@ public class generation_mutation{
         }
         while(k < maxIters && position < tape.length && position > 0){
             if(verbose == true){
+                System.out.println("\n ========================================= ");
                 System.out.println("\n ITER = " + k);
                 System.out.println("\n Tape Position = " + position);
                 System.out.print("\n Current Instruction = [" + next_state/8  + "]: ");
@@ -170,31 +218,30 @@ public class generation_mutation{
             // Increase counter.
             k++;
             if(verbose == true){
-                System.out.println("\n Tape ");
+                System.out.println("\n Tape: ");
                 printTape(tape);
             }
         }
         return tape;
     }
 
+    public static double[] evaluate(int[] outputString){
+        double[] fit = new double[pop];
+        for(int i = 0; i < pop; i++){
+            fit[i] = fitness(turingMachine(population[i], 100, 64, 100), outputString);
+        }
+        return fit;
+    }
+
     // Main Class
     public static void main(String args[]){
         popGeneration();
         printPop();
-        /*System.out.println("\n ======= CROSS OVER ======== \n");
-        crossOver(0, 1);
-        printPop();
-        System.out.println("\n ======= MUTATIION ======== \n");
-        mutation(0);
-        printPop();
-        System.out.println("\n ======= FITNESS ======== \n");
-        System.out.println(fitness(population[0], population[1]));
-        System.out.println("\n ======= DECODE ======== \n");
-        System.out.println(decode(population[0]));
-        */
         int[] tape = turingMachine(population[0], 100, 64, 100);
         System.out.println("\n ======= FITNESS ======== \n");
-        System.out.println(fitness(tape, tape));
-
+        double[] scores = evaluate(tape);
+        for(int i = 0; i < scores.length; i++){
+            System.out.println("\n score[i]: " + scores[i]);
+        }
     }
 }
