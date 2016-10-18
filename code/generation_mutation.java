@@ -14,16 +14,23 @@
 
 import java.util.Random;
 import java.lang.Math;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 
 public class generation_mutation{
 
     public static int length         = 1024;
     public static int pop            = 250;
     public static int MaxPop         = 100000;
+    public static int tapeLength     = 100;
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
     public static int[][] population = new int[MaxPop][length];
     public static boolean verbose    = false;
+
 
     // Population generation.
     public static void popGeneration(){
@@ -38,8 +45,8 @@ public class generation_mutation{
     // Random tape generation.
     public static int[] codeGeneration(){
         Random randGen = new Random();
-        int[] code     = new int[length];
-        for(int i = 0; i < length; i ++){
+        int[] code     = new int[tapeLength];
+        for(int i = 0; i < tapeLength; i ++){
             code[i] = randGen.nextInt(2);
         }
         return code;
@@ -269,7 +276,7 @@ public class generation_mutation{
     public static double[] evaluate(int[] evaluationString){
         double[] fit = new double[pop];
         for(int i = 0; i < pop; i++){
-            fit[i] = fitness(turingMachine(i, 100, 64, 100), evaluationString);
+            fit[i] = fitness(turingMachine(i, 100, 64, tapeLength), evaluationString);
         }
         return fit;
     }
@@ -348,13 +355,47 @@ public class generation_mutation{
             if(k == 0){
                 baseSimilarity = maxSimilarity;
             }
-            System.out.println("\n===================================================\n");
             System.out.println("Generation: " + k);
+            System.out.println("\n===================================================\n");
             System.out.println("Max  Similarity: " + maxSimilarity);
             System.out.printf("Improvement from first generation: %.2f",  (maxSimilarity/baseSimilarity - 1)*100);
             System.out.println("%");
+
             k++;
         }
+        System.out.println("\n\n");
+        System.out.println("\n===================================================\n");
+        System.out.println("\nSUMMARY \n");
+        System.out.println("\n===================================================\n");
+        System.out.println("\n Best Machine: ");
+        for(int i = 0; i < length; i++){
+            if(i % 64 == 0){
+                System.out.println("");
+            }
+            System.out.print(population[0][i]);
+        }
+        System.out.println("");
+        System.out.println("\n Objective string: ");
+        for(int i = 0; i < evaluationString.length; i++){
+            if(i % 10 == 0){
+                System.out.println("");
+            }
+            System.out.print(evaluationString[i]);
+        }
+        System.out.println("");
+        int[] finalString = turingMachine(0, 100, 64, tapeLength);
+        System.out.println("\n Closest String: ");
+        for(int i = 0; i < finalString.length; i++){
+            if(i % 10 == 0){
+                System.out.println("");
+            }
+            System.out.print(finalString[i]);
+        }
+        System.out.println("");
+        System.out.println("\nSimilarity: " + maxSimilarity);
+        System.out.printf("Improvement from first generation: %.2f",  (maxSimilarity/baseSimilarity - 1)*100);
+        System.out.println("%");
+        System.out.println("\n===================================================\n");
     }
 
     // Main Class
@@ -366,6 +407,6 @@ public class generation_mutation{
         // Objective code.
         int[] code = codeGeneration();
         System.out.println("\n ======= Genetic Algorithm ======== \n");
-        geneticAlg(1000, code, 2, .99, .01);
+        geneticAlg(300, code, 2, .99, .01);
     }
 }
