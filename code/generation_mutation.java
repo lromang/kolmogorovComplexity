@@ -4,7 +4,7 @@ import java.lang.Math;
 public class generation_mutation{
 
     public static int length         = 1024;
-    public static int pop            = 2;
+    public static int pop            = 1;
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
     public static int[][] population = new int[pop][length];
@@ -30,10 +30,11 @@ public class generation_mutation{
     // Print population.
     public static void printPop(){
         for(int i = 0; i < pop; i++){
-            System.out.println("Individual: " + i);
+            System.out.print("Machine code: " + i + " | Length: " + length + " | Individual instructions: " + length/8);
+            System.out.print("\n==================================================================");
             for(int j = 0; j < length; j ++){
-                if( j % 8 == 0){
-                    System.out.print("\n ["+ j/8 +"]:  ");
+                if(j % 8 == 0){
+                    System.out.print("\n[" + j / 8 + "]: ");
                 }
                 System.out.print(population[i][j]);
             }
@@ -121,13 +122,15 @@ public class generation_mutation{
         int next_state = (int)decode(state);
         while(k < maxIters && position < tape.length && position > 0){
             System.out.println("\n ITER = " + k);
-            System.out.println("\n Current State = " + next_state/8);
-            System.out.println("\n Current Position = " + position);
+            System.out.println("\n Tape Position = " + position);
+            System.out.print("\n Current Instruction = [" + next_state/8  + "]: ");
             int i = 0;
             while(i < nStates){
                 state[i] = machineEncode[next_state + i];
+                System.out.print(state[i]);
                 i++;
             }
+            System.out.println(machineEncode[next_state + (i + 1)] + "" + machineEncode[next_state + (i + 2)]);
             // Start reading code
             next_state = ((int)decode(state)) * 8;
             System.out.println("\n Next State = " + next_state/8);
@@ -140,6 +143,7 @@ public class generation_mutation{
             System.out.println("\n Move = " + position);
             // Increase counter.
             k++;
+            System.out.println("\n Tape ");
             printTape(tape);
         }
         return tape;
