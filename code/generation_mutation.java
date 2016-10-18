@@ -4,8 +4,8 @@ import java.lang.Math;
 public class generation_mutation{
 
     public static int length         = 1024;
-    public static int pop            = 100;
-    public static int MaxPop         = 10000;
+    public static int pop            = 200;
+    public static int MaxPop         = 100000;
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
     public static int[][] population = new int[MaxPop][length];
@@ -19,6 +19,16 @@ public class generation_mutation{
                 population[i][j] = randGen.nextInt(2);
             }
         }
+    }
+
+    // Random tape generation.
+    public static int[] codeGeneration(){
+        Random randGen = new Random();
+        int[] code     = new int[length];
+        for(int i = 0; i < length; i ++){
+            code[i] = randGen.nextInt(2);
+        }
+        return code;
     }
 
     // Random integer generation
@@ -279,7 +289,7 @@ public class generation_mutation{
     public static void naturalSelection(int[] evaluationString, int cutPoint){
         double[] scores = evaluate(evaluationString);
         inSort(scores);
-        for(int i = (int) Math.floor((pop - 1) / cutPoint); i < pop; i++){
+        for(int i = (int) Math.floor(pop / cutPoint); i < pop; i++){
             for(int j = 0; j < length; j++){
                 population[i][j] = 0;
             }
@@ -287,42 +297,55 @@ public class generation_mutation{
         pop = (int) Math.floor(pop / cutPoint);
     }
 
-    public static void geneticAlg(int generations){
-        int a;
+    public static void geneticAlg(int generations, int[] evaluationString,  int cutPoint, double pCross, double pMut){
+        int k = 0;
+        double maxSimilarity = -1;
+        Random randGen = new Random();
+        double[] scores;
+        double[] sortedScores;
+        while(k < generations && maxSimilarity < 1){
+            int stablePop  = pop;
+            int indCross   = (int) Math.floor(stablePop * pCross);
+            int indMut     = (int) Math.floor(stablePop * pMut);
+            // Cross over
+            for(int i = 0; i < (int) Math.floor(stablePop / 2); i++){
+                double cross = randGen.nextDouble();
+                if(cross > pCross){
+                    crossOver(i, stablePop - (i + 1));
+                }
+            }
+            // Mutation
+            stablePop = pop;
+            for(int i = 0; i < stablePop; i++){
+                double mutate = randGen.nextDouble();
+                if(mutate > pMut){
+                    mutation(i);
+                }
+            }
+            // Natural Selection
+            naturalSelection(evaluationString, cutPoint);
+            // Get scores
+            scores       = evaluate(evaluationString);
+            inSort(scores);
+            if(maxSimilarity <= scores[0]){
+                maxSimilarity = scores[0];
+            }
+            System.out.println("\n===================================================\n");
+            System.out.println("Generation: " + k);
+            System.out.println("Max  Similarity: " + maxSimilarity);
+            k++;
+        }
     }
 
     // Main Class
     public static void main(String args[]){
         popGeneration();
-        printPop();
         if(args.length > 0){
             verbose = true;
         }
-        /*
-         * This should be the tape against which we are going to
-         * measure similitude.
-         */
-        int[] tape = turingMachine(0, 100, 64, 100);
-        System.out.println("\n ======= FITNESS ======== \n");
-        double[] scores = evaluate(tape);
-        for(int i = 0; i < scores.length; i++){
-            System.out.println("\n score[" + i + "]: " + scores[i]);
-        }
-        System.out.println("\n ======= CROSS OVER ======== \n");
-        crossOver(0,1);
-        // SORT
-        scores = evaluate(tape);
-        inSort(scores);
-        System.out.println("\n ======= SORTED POP ======== \n");
-        scores = evaluate(tape);
-        for(int i = 0; i < scores.length; i++){
-            System.out.println("\n score[" + i + "]: " + scores[i]);
-        }
-        System.out.println("\n ======= NATURAL SELECTION ======== \n");
-        naturalSelection(tape, 2);
-        scores = evaluate(tape);
-        for(int i = 0; i < scores.length; i++){
-            System.out.println("\n score[" + i + "]: " + scores[i]);
-        }
+        // Objective code.
+        int[] code = codeGeneration();
+        System.out.println("\n ======= Genetic Algorithm ======== \n");
+        geneticAlg(1000, code, 2, .9, .1);
     }
 }
