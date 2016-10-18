@@ -32,6 +32,9 @@ public class generation_mutation{
         for(int i = 0; i < pop; i++){
             System.out.println("Individual: " + i);
             for(int j = 0; j < length; j ++){
+                if( j % 8 == 0){
+                    System.out.print("\n ["+ j/8 +"]:  ");
+                }
                 System.out.print(population[i][j]);
             }
             System.out.println("");
@@ -118,7 +121,7 @@ public class generation_mutation{
         int next_state = (int)decode(state);
         while(k < maxIters && position < tape.length && position > 0){
             System.out.println("\n ITER = " + k);
-            System.out.println("\n Current State = " + next_state);
+            System.out.println("\n Current State = " + next_state/8);
             System.out.println("\n Current Position = " + position);
             int i = 0;
             while(i < nStates){
@@ -126,8 +129,8 @@ public class generation_mutation{
                 i++;
             }
             // Start reading code
-            next_state = (int)decode(state);
-            System.out.println("\n Next State = " + next_state);
+            next_state = ((int)decode(state)) * 8;
+            System.out.println("\n Next State = " + next_state/8);
 
             // Write in tape.
             tape[position] = machineEncode[next_state + i + 1];

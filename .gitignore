@@ -1,2 +1,5 @@
-./others
-./code/*.class
+others
+code/generation_mutation.class
+code/test.txt
+
+
