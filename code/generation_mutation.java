@@ -8,7 +8,7 @@ public class generation_mutation{
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
     public static int[][] population = new int[pop][length];
-    public static boole   verbose    = true;
+    public static boolean verbose    = true;
 
     // Population generation.
     public static void popGeneration(){
@@ -32,8 +32,9 @@ public class generation_mutation{
     public static void printPop(){
         if(verbose == true){
             for(int i = 0; i < pop; i++){
-                System.out.print("Machine code: " + i + " | Length: " + length + " | Individual instructions: " + length/8);
                 System.out.print("\n==================================================================");
+                System.out.print("\nMachine #: " + i + " | Length: " + length + " | Individual instructions: " + length/8);
+                System.out.println("\n==================================================================");
                 for(int j = 0; j < length; j ++){
                     if(j % 8 == 0){
                         System.out.print("\n[" + j / 8 + "]: ");
@@ -92,6 +93,8 @@ public class generation_mutation{
         for(int i = 0; i < length; i++){
             if(string1[i] == string2[i]){
                 inter = inter + 1;
+            }else{
+                inter = inter - 1;
             }
         }
         return inter/length;
@@ -129,6 +132,11 @@ public class generation_mutation{
         nStates = (int)(Math.log(nStates) / Math.log(2)); // pass to log 2
         int[] state    = new int[nStates]; // state
         int next_state = (int)decode(state);
+        if(verbose == true){
+            System.out.print("\n==================================================================");
+            System.out.print("\nMachine Simulation ");
+            System.out.println("\n==================================================================");
+        }
         while(k < maxIters && position < tape.length && position > 0){
             if(verbose == true){
                 System.out.println("\n ITER = " + k);
