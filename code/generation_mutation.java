@@ -1,3 +1,17 @@
+/* #########################################
+ * Luis Manuel Román García
+ * luis.roangarci@gmail.com
+ * #########################################
+ *
+ * -----------------------------------------
+ * General pourpose routines for the 
+ * implementation of genetic algorithms. 
+ * The application in question attempts to
+ * approximate Kolmogorov's Complexity.
+ * -----------------------------------------
+ *
+ */
+
 import java.util.Random;
 import java.lang.Math;
 
