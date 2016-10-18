@@ -3,11 +3,12 @@ import java.lang.Math;
 
 public class generation_mutation{
 
-    public static int length         = 1024;
-    public static int pop            = 1;
+    public static int length         = 8;//1024;
+    public static int pop            = 2;
+    public static int MaxPop         = 10000;
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
-    public static int[][] population = new int[pop][length];
+    public static int[][] population = new int[MaxPop][length];
     public static boolean verbose    = true;
 
     // Population generation.
@@ -56,25 +57,34 @@ public class generation_mutation{
         if(verbose == true){
             System.out.println("Cut: " + cut);
         }
-         // Exchange encoding:
-        int top = Math.min(length - cut, length / 2);
-        for(int i = 0; i < top; i ++){
-            aux[k]                         = population[firstInd][cut + i];
-            population[firstInd][cut + i]  = population[secondInd][cut + i];
-            population[secondInd][cut + i] = aux[k];
-            k ++;
-        }
-        // Close ring.
-        if(aux.length < length/2){
-            int dist = length/2 - aux.length;
-            int[] aux_circ = new int[dist];
-            k = 0;
-            for(int i = 0; i < dist; i++){
-                aux_circ[k] = population[firstInd][i];
-                population[firstInd][i]  = population[secondInd][i];
-                population[secondInd][i] = aux_circ[k];
+        // Save parents:
+        if(pop < (MaxPop - 1)){
+            population[pop]     = population[firstInd].clone();
+            population[pop + 1] = population[secondInd].clone();
+
+            // Save childs:
+            int top = Math.min(length - cut, length / 2);
+            for(int i = 0; i < top; i ++){
+                aux[k]                         = population[firstInd][cut + i];
+                population[firstInd][cut + i]  = population[secondInd][cut + i];
+                population[secondInd][cut + i] = aux[k];
                 k ++;
             }
+            // Close ring.
+            if(aux.length < length/2){
+                int dist = length/2 - aux.length;
+                int[] aux_circ = new int[dist];
+                k = 0;
+                for(int i = 0; i < dist; i++){
+                    aux_circ[k] = population[firstInd][i];
+                    population[firstInd][i]  = population[secondInd][i];
+                    population[secondInd][i] = aux_circ[k];
+                    k ++;
+                }
+            }
+            pop = pop + 2;
+        }else{
+            System.out.println("Exceeding population limit at Cross-Over stage!!!");
         }
     }
 
@@ -97,16 +107,13 @@ public class generation_mutation{
         if(verbose == true){
             System.out.println("Mute: " + mute);
         }
-        population[indMutation][mute] = population[indMutation][mute] ^ 1;
-    }
-
-
-    public static void addNPop(int newIndividuals){
-        int[][] new_pop = new int[pop + newIndividuals][length];
-        for(int i = 0; i < pop; i++){
-            new_pop[i] = population[i];
+        if(pop < (MaxPop -1)){
+            population[pop]       = population[indMutation].clone();
+            population[pop][mute] = population[pop][mute] ^ 1;
+            pop = pop + 1;
+        }else{
+            System.out.println("Exceeding population limit at Mutation stage!!!");
         }
-        population = new_pop;
     }
 
 
@@ -273,6 +280,10 @@ public class generation_mutation{
     public static void main(String args[]){
         popGeneration();
         printPop();
+        crossOver(0,1);
+        printPop();
+        mutation(0);
+        printPop();
         /*int[] tape = turingMachine(population[0], 100, 64, 100);
         System.out.println("\n ======= FITNESS ======== \n");
         double[] scores = evaluate(tape);
@@ -291,7 +302,5 @@ public class generation_mutation{
             System.out.println("\n score[i]: " + scores[i]);
         }
         */
-        addNPop(2);
-        printPop();
     }
 }
