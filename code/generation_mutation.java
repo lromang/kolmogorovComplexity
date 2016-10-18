@@ -242,10 +242,10 @@ public class generation_mutation{
         return tape;
     }
 
-    public static double[] evaluate(int[] outputString){
+    public static double[] evaluate(int[] evaluationString){
         double[] fit = new double[pop];
         for(int i = 0; i < pop; i++){
-            fit[i] = fitness(turingMachine(i, 100, 64, 100), outputString);
+            fit[i] = fitness(turingMachine(i, 100, 64, 100), evaluationString);
         }
         return fit;
     }
@@ -257,23 +257,38 @@ public class generation_mutation{
      */
 
     public static void exch(double[] scores, int i, int j){
-        double aux      = scores[i];
-        int[] auxInd = population[i];
+        double aux   = scores[i];
+        int[] auxInd = population[i].clone();
         // Exchange indexes in scores.
         scores[i] = scores[j];
         scores[j] = aux;
         // Exchange indexes in individuals.
-        auxInd        = population[i];
-        population[i] = population[j];
-        population[j] = auxInd;
+        auxInd        = population[i].clone();
+        population[i] = population[j].clone();
+        population[j] = auxInd.clone();
     }
 
     public static void inSort(double[] scores){
         for(int i = 0; i < pop; i++){
-            for(int j = i; j > 0 && (scores[j] < scores[j - 1]); j--){
+            for(int j = i; j > 0 && (scores[j] > scores[j - 1]); j--){
                 exch(scores, j, j - 1);
             }
         }
+    }
+
+    public static void naturalSelection(int[] evaluationString, int cutPoint){
+        double[] scores = evaluate(evaluationString);
+        inSort(scores);
+        for(int i = (int) Math.floor((pop - 1) / cutPoint); i < pop; i++){
+            for(int j = 0; j < length; j++){
+                population[i][j] = 0;
+            }
+        }
+        pop = (int) Math.floor(pop / cutPoint);
+    }
+
+    public static void geneticAlg(int generations){
+        int a;
     }
 
     // Main Class
@@ -299,6 +314,12 @@ public class generation_mutation{
         scores = evaluate(tape);
         inSort(scores);
         System.out.println("\n ======= SORTED POP ======== \n");
+        scores = evaluate(tape);
+        for(int i = 0; i < scores.length; i++){
+            System.out.println("\n score[" + i + "]: " + scores[i]);
+        }
+        System.out.println("\n ======= NATURAL SELECTION ======== \n");
+        naturalSelection(tape, 2);
         scores = evaluate(tape);
         for(int i = 0; i < scores.length; i++){
             System.out.println("\n score[" + i + "]: " + scores[i]);
