@@ -90,14 +90,14 @@ public class generation_mutation{
     // Fitness function:
     public static double fitness(int[] string1, int[] string2){
         double inter = 0;
-        for(int i = 0; i < length; i++){
+        for(int i = 0; i < string1.length; i++){
             if(string1[i] == string2[i]){
                 inter = inter + 1;
             }else{
                 inter = inter - 1;
             }
         }
-        return inter/length;
+        return inter/string1.length;
     }
 
 
@@ -192,6 +192,9 @@ public class generation_mutation{
         System.out.println("\n ======= DECODE ======== \n");
         System.out.println(decode(population[0]));
         */
-        turingMachine(population[0], 100, 64, 100);
+        int[] tape = turingMachine(population[0], 100, 64, 100);
+        System.out.println("\n ======= FITNESS ======== \n");
+        System.out.println(fitness(tape, tape));
+
     }
 }
