@@ -33,7 +33,7 @@ public class generation_mutation{
         if(verbose == true){
             for(int i = 0; i < pop; i++){
                 System.out.print("\n==================================================================");
-                System.out.print("\nMachine #: " + i + " | Length: " + length + " | Individual instructions: " + length/8);
+                System.out.print("\nMachine #: " + i + " | Length: " + length + " | Individual instructions: " + length / 8);
                 System.out.println("\n==================================================================");
                 for(int j = 0; j < length; j ++){
                     if(j % 8 == 0){
