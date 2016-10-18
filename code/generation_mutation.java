@@ -188,7 +188,8 @@ public class generation_mutation{
      * configuration.
      * n_states = 64 (bits required for description = 6)
      */
-    public static int[] turingMachine(int[] machineEncode, int maxIters, int nStates, int tapeLength){
+    public static int[] turingMachine(int machineIndex, int maxIters, int nStates, int tapeLength){
+        int [] machineEncode  = population[machineIndex];
         int[] tape     = new int[tapeLength];  // Tape.
         int   position = (int) (tapeLength / 2);  // Track position in tape.
         int   k        = 0;    // Operation counter
@@ -203,6 +204,7 @@ public class generation_mutation{
         while(k < maxIters && position < tape.length && position > 0){
             if(verbose == true){
                 System.out.println("\n ========================================= ");
+                System.out.println("\n Machine = [" + machineIndex +"]");
                 System.out.println("\n ITER = " + k);
                 System.out.println("\n Tape Position = " + position);
                 System.out.print("\n Current Instruction = [" + next_state/8  + "]: ");
@@ -210,7 +212,6 @@ public class generation_mutation{
             int i = 0;
             while(i < nStates){
                 state[i] = machineEncode[next_state + i];
-                System.out.print(state[i]);
                 i++;
             }
             if(verbose == true){
@@ -244,7 +245,7 @@ public class generation_mutation{
     public static double[] evaluate(int[] outputString){
         double[] fit = new double[pop];
         for(int i = 0; i < pop; i++){
-            fit[i] = fitness(turingMachine(population[i], 100, 64, 100), outputString);
+            fit[i] = fitness(turingMachine(i, 100, 64, 100), outputString);
         }
         return fit;
     }
@@ -279,7 +280,14 @@ public class generation_mutation{
     public static void main(String args[]){
         popGeneration();
         printPop();
-        int[] tape = turingMachine(population[0], 100, 64, 100);
+        if(args.length > 0){
+            verbose = true;
+        }
+        /*
+         * This should be the tape against which we are going to
+         * measure similitude.
+         */
+        int[] tape = turingMachine(0, 100, 64, 100);
         System.out.println("\n ======= FITNESS ======== \n");
         double[] scores = evaluate(tape);
         for(int i = 0; i < scores.length; i++){
