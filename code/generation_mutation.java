@@ -23,9 +23,9 @@ import java.io.IOException;
 public class generation_mutation{
 
     public static int length         = 1024;
-    public static int pop            = 250;
+    public static int pop            = 50;
     public static int MaxPop         = 100000;
-    public static int tapeLength     = 100;
+    public static int tapeLength     = 10;
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
     public static int[][] population = new int[MaxPop][length];
@@ -349,7 +349,7 @@ public class generation_mutation{
             // Get scores
             scores       = evaluate(evaluationString);
             inSort(scores);
-            if(maxSimilarity <= scores[0]){
+            if(scores.length > 0 && maxSimilarity <= scores[0]){
                 maxSimilarity = scores[0];
             }
             if(k == 0){
@@ -407,6 +407,6 @@ public class generation_mutation{
         // Objective code.
         int[] code = codeGeneration();
         System.out.println("\n ======= Genetic Algorithm ======== \n");
-        geneticAlg(300, code, 2, .99, .01);
+        geneticAlg(1000, code, 2, .99, .02);
     }
 }
