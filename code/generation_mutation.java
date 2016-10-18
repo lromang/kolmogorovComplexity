@@ -8,7 +8,7 @@ public class generation_mutation{
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
     public static int[][] population = new int[pop][length];
-    public static boolean verbose    = true;
+    public static boolean verbose    = false;
 
     // Population generation.
     public static void popGeneration(){
@@ -233,6 +233,32 @@ public class generation_mutation{
         return fit;
     }
 
+    /*
+     * ==========================================
+     * SORTING UTILERIES
+     * ==========================================
+     */
+
+    public static void exch(double[] scores, int i, int j){
+        double aux      = scores[i];
+        int[] auxInd = population[i];
+        // Exchange indexes in scores.
+        scores[i] = scores[j];
+        scores[j] = aux;
+        // Exchange indexes in individuals.
+        auxInd        = population[i];
+        population[i] = population[j];
+        population[j] = auxInd;
+    }
+
+    public static void inSort(double[] scores){
+        for(int i = 0; i < pop; i++){
+            for(int j = i; j > 0 && (scores[j] < scores[j - 1]); j--){
+                exch(scores, j, j - 1);
+            }
+        }
+    }
+
     // Main Class
     public static void main(String args[]){
         popGeneration();
@@ -240,6 +266,17 @@ public class generation_mutation{
         int[] tape = turingMachine(population[0], 100, 64, 100);
         System.out.println("\n ======= FITNESS ======== \n");
         double[] scores = evaluate(tape);
+        for(int i = 0; i < scores.length; i++){
+            System.out.println("\n score[i]: " + scores[i]);
+        }
+        // SORT
+        inSort(scores);
+        System.out.println("\n ======= SORTED SCORES ======== \n");
+        for(int i = 0; i < scores.length; i++){
+            System.out.println("\n score[i]: " + scores[i]);
+        }
+        System.out.println("\n ======= SORTED POP ======== \n");
+        scores = evaluate(tape);
         for(int i = 0; i < scores.length; i++){
             System.out.println("\n score[i]: " + scores[i]);
         }
