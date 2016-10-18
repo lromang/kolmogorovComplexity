@@ -8,6 +8,7 @@ public class generation_mutation{
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
     public static int[][] population = new int[pop][length];
+    public static boole   verbose    = true;
 
     // Population generation.
     public static void popGeneration(){
@@ -29,16 +30,18 @@ public class generation_mutation{
 
     // Print population.
     public static void printPop(){
-        for(int i = 0; i < pop; i++){
-            System.out.print("Machine code: " + i + " | Length: " + length + " | Individual instructions: " + length/8);
-            System.out.print("\n==================================================================");
-            for(int j = 0; j < length; j ++){
-                if(j % 8 == 0){
-                    System.out.print("\n[" + j / 8 + "]: ");
+        if(verbose == true){
+            for(int i = 0; i < pop; i++){
+                System.out.print("Machine code: " + i + " | Length: " + length + " | Individual instructions: " + length/8);
+                System.out.print("\n==================================================================");
+                for(int j = 0; j < length; j ++){
+                    if(j % 8 == 0){
+                        System.out.print("\n[" + j / 8 + "]: ");
+                    }
+                    System.out.print(population[i][j]);
                 }
-                System.out.print(population[i][j]);
+                System.out.println("");
             }
-            System.out.println("");
         }
     }
 
@@ -49,7 +52,9 @@ public class generation_mutation{
         int cut        = showRandomInteger(0, (length - 1), randGen);
         int[] aux      = new int[(length - cut)];
         int k          = 0;
-        System.out.println("Cut: " + cut);
+        if(verbose == true){
+            System.out.println("Cut: " + cut);
+        }
          // Exchange encoding:
         int top = Math.min(length - cut, length / 2);
         for(int i = 0; i < top; i ++){
@@ -75,7 +80,9 @@ public class generation_mutation{
     public static void mutation(int indMutation){
         Random randGen = new Random();
         int mute       = showRandomInteger(0, (length - 1), randGen);
-        System.out.println("Mute: " + mute);
+        if(verbose == true){
+            System.out.println("Mute: " + mute);
+        }
         population[indMutation][mute] = population[indMutation][mute] ^ 1;
     }
 
@@ -100,11 +107,13 @@ public class generation_mutation{
     }
 
     public static void printTape(int[] tape){
-        System.out.println("\n=======================");
-        for(int i = 0; i < tape.length; i ++){
-            System.out.print(tape[i]);
+        if(verbose == true){
+            System.out.println("\n=======================");
+            for(int i = 0; i < tape.length; i ++){
+                System.out.print(tape[i]);
+            }
+            System.out.println("\n=======================");
         }
-        System.out.println("\n=======================");
     }
 
     /*
@@ -121,30 +130,41 @@ public class generation_mutation{
         int[] state    = new int[nStates]; // state
         int next_state = (int)decode(state);
         while(k < maxIters && position < tape.length && position > 0){
-            System.out.println("\n ITER = " + k);
-            System.out.println("\n Tape Position = " + position);
-            System.out.print("\n Current Instruction = [" + next_state/8  + "]: ");
+            if(verbose == true){
+                System.out.println("\n ITER = " + k);
+                System.out.println("\n Tape Position = " + position);
+                System.out.print("\n Current Instruction = [" + next_state/8  + "]: ");
+            }
             int i = 0;
             while(i < nStates){
                 state[i] = machineEncode[next_state + i];
                 System.out.print(state[i]);
                 i++;
             }
-            System.out.println(machineEncode[next_state + (i + 1)] + "" + machineEncode[next_state + (i + 2)]);
+            if(verbose == true){
+                System.out.println(machineEncode[next_state + (i + 1)] + "" + machineEncode[next_state + (i + 2)]);
+            }
             // Start reading code
             next_state = ((int)decode(state)) * 8;
-            System.out.println("\n Next State = " + next_state/8);
-
+            if(verbose == true){
+                System.out.println("\n Next State = " + next_state/8);
+            }
             // Write in tape.
             tape[position] = machineEncode[next_state + i + 1];
-            System.out.println("\n Wrote = " + tape[position]);
+            if(verbose == true){
+                System.out.println("\n Wrote = " + tape[position]);
+            }
             // Move position.
             position = position + (int)Math.pow(-1, machineEncode[next_state + i + 2]);
-            System.out.println("\n Move = " + position);
+            if(verbose == true){
+                System.out.println("\n Move = " + position);
+            }
             // Increase counter.
             k++;
-            System.out.println("\n Tape ");
-            printTape(tape);
+            if(verbose == true){
+                System.out.println("\n Tape ");
+                printTape(tape);
+            }
         }
         return tape;
     }
