@@ -4,11 +4,11 @@ import java.lang.Math;
 public class generation_mutation{
 
     public static int length         = 1024;
-    public static int pop            = 10;
+    public static int pop            = 1;
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
     public static int[][] population = new int[pop][length];
-    public static boolean verbose    = false;
+    public static boolean verbose    = true;
 
     // Population generation.
     public static void popGeneration(){
@@ -99,6 +99,16 @@ public class generation_mutation{
         }
         population[indMutation][mute] = population[indMutation][mute] ^ 1;
     }
+
+
+    public static void addNPop(int newIndividuals){
+        int[][] new_pop = new int[pop + newIndividuals][length];
+        for(int i = 0; i < pop; i++){
+            new_pop[i] = population[i];
+        }
+        population = new_pop;
+    }
+
 
     /*
      * ==========================================
@@ -263,7 +273,7 @@ public class generation_mutation{
     public static void main(String args[]){
         popGeneration();
         printPop();
-        int[] tape = turingMachine(population[0], 100, 64, 100);
+        /*int[] tape = turingMachine(population[0], 100, 64, 100);
         System.out.println("\n ======= FITNESS ======== \n");
         double[] scores = evaluate(tape);
         for(int i = 0; i < scores.length; i++){
@@ -280,5 +290,8 @@ public class generation_mutation{
         for(int i = 0; i < scores.length; i++){
             System.out.println("\n score[i]: " + scores[i]);
         }
+        */
+        addNPop(2);
+        printPop();
     }
 }
