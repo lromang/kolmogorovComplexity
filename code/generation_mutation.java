@@ -3,13 +3,13 @@ import java.lang.Math;
 
 public class generation_mutation{
 
-    public static int length         = 8;//1024;
-    public static int pop            = 2;
+    public static int length         = 1024;
+    public static int pop            = 100;
     public static int MaxPop         = 10000;
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
     public static int[][] population = new int[MaxPop][length];
-    public static boolean verbose    = true;
+    public static boolean verbose    = false;
 
     // Population generation.
     public static void popGeneration(){
@@ -61,7 +61,6 @@ public class generation_mutation{
         if(pop < (MaxPop - 1)){
             population[pop]     = population[firstInd].clone();
             population[pop + 1] = population[secondInd].clone();
-
             // Save childs:
             int top = Math.min(length - cut, length / 2);
             for(int i = 0; i < top; i ++){
@@ -280,27 +279,21 @@ public class generation_mutation{
     public static void main(String args[]){
         popGeneration();
         printPop();
-        crossOver(0,1);
-        printPop();
-        mutation(0);
-        printPop();
-        /*int[] tape = turingMachine(population[0], 100, 64, 100);
+        int[] tape = turingMachine(population[0], 100, 64, 100);
         System.out.println("\n ======= FITNESS ======== \n");
         double[] scores = evaluate(tape);
         for(int i = 0; i < scores.length; i++){
-            System.out.println("\n score[i]: " + scores[i]);
+            System.out.println("\n score[" + i + "]: " + scores[i]);
         }
+        System.out.println("\n ======= CROSS OVER ======== \n");
+        crossOver(0,1);
         // SORT
+        scores = evaluate(tape);
         inSort(scores);
-        System.out.println("\n ======= SORTED SCORES ======== \n");
-        for(int i = 0; i < scores.length; i++){
-            System.out.println("\n score[i]: " + scores[i]);
-        }
         System.out.println("\n ======= SORTED POP ======== \n");
         scores = evaluate(tape);
         for(int i = 0; i < scores.length; i++){
-            System.out.println("\n score[i]: " + scores[i]);
+            System.out.println("\n score[" + i + "]: " + scores[i]);
         }
-        */
     }
 }
