@@ -111,11 +111,11 @@ public class generation_mutation{
 
     public static void printTape(int[] tape){
         if(verbose == true){
-            System.out.println("\n=======================");
+            System.out.println("");
             for(int i = 0; i < tape.length; i ++){
                 System.out.print(tape[i]);
             }
-            System.out.println("\n=======================");
+            System.out.println("");
         }
     }
 
@@ -139,6 +139,7 @@ public class generation_mutation{
         }
         while(k < maxIters && position < tape.length && position > 0){
             if(verbose == true){
+                System.out.println("\n ========================================= ");
                 System.out.println("\n ITER = " + k);
                 System.out.println("\n Tape Position = " + position);
                 System.out.print("\n Current Instruction = [" + next_state/8  + "]: ");
@@ -170,7 +171,7 @@ public class generation_mutation{
             // Increase counter.
             k++;
             if(verbose == true){
-                System.out.println("\n Tape ");
+                System.out.println("\n Tape: ");
                 printTape(tape);
             }
         }
