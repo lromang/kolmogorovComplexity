@@ -4,7 +4,7 @@ import java.lang.Math;
 public class generation_mutation{
 
     public static int length         = 1024;
-    public static int pop            = 200;
+    public static int pop            = 250;
     public static int MaxPop         = 100000;
     public static double p_crossover = .99;
     public static double p_mutation  = .01;
@@ -300,6 +300,7 @@ public class generation_mutation{
     public static void geneticAlg(int generations, int[] evaluationString,  int cutPoint, double pCross, double pMut){
         int k = 0;
         double maxSimilarity = -1;
+        double baseSimilarity = -1;
         Random randGen = new Random();
         double[] scores;
         double[] sortedScores;
@@ -330,9 +331,14 @@ public class generation_mutation{
             if(maxSimilarity <= scores[0]){
                 maxSimilarity = scores[0];
             }
+            if(k == 0){
+                baseSimilarity = maxSimilarity;
+            }
             System.out.println("\n===================================================\n");
             System.out.println("Generation: " + k);
             System.out.println("Max  Similarity: " + maxSimilarity);
+            System.out.printf("Improvement from first generation: %.2f",  (maxSimilarity/baseSimilarity - 1)*100);
+            System.out.println("%");
             k++;
         }
     }
@@ -346,6 +352,6 @@ public class generation_mutation{
         // Objective code.
         int[] code = codeGeneration();
         System.out.println("\n ======= Genetic Algorithm ======== \n");
-        geneticAlg(1000, code, 2, .9, .1);
+        geneticAlg(1000, code, 2, .99, .01);
     }
 }
