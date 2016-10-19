@@ -25,9 +25,7 @@ public class generation_mutation{
     public static int length         = 1024;
     public static int pop            = 50;
     public static int MaxPop         = 100000;
-    public static int tapeLength     = 10;
-    public static double p_crossover = .99;
-    public static double p_mutation  = .01;
+    public static int tapeLength     = 30;
     public static int[][] population = new int[MaxPop][length];
     public static boolean verbose    = false;
 
