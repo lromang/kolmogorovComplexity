@@ -14,6 +14,7 @@
 
 import java.util.Random;
 import java.lang.Math;
+import java.util.Scanner;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,15 +25,16 @@ public class generation_mutation{
 
     public static int length         = 1024;
     public static int pop            = 100;
+    public static int seed           = 1234;
     public static int MaxPop         = 100000;
     public static int tapeLength     = 10;
+    public static Random randGen     = new Random(seed);
     public static int[][] population = new int[MaxPop][length];
     public static boolean verbose    = false;
 
 
     // Population generation.
     public static void popGeneration(){
-        Random randGen = new Random();
         for(int i = 0; i < pop; i++){
             for(int j = 0; j < length; j ++){
                 population[i][j] = randGen.nextInt(2);
@@ -42,7 +44,6 @@ public class generation_mutation{
 
     // Random tape generation.
     public static int[] codeGeneration(){
-        Random randGen = new Random();
         int[] code     = new int[tapeLength];
         for(int i = 0; i < tapeLength; i ++){
             code[i] = randGen.nextInt(2);
@@ -79,7 +80,6 @@ public class generation_mutation{
 
     // Cross Over in ring fashion.
     public static void crossOver(int firstInd, int secondInd){
-        Random randGen = new Random();
         int cut        = showRandomInteger(0, (length - 1), randGen);
         int[] aux      = new int[(length - cut)];
         int k          = 0;
@@ -130,7 +130,6 @@ public class generation_mutation{
      *
      */
     public static void mutation(int indMutation){
-        Random randGen = new Random();
         int mute       = showRandomInteger(0, (length - 1), randGen);
         if(verbose == true){
             System.out.println("Mute: " + mute);
@@ -320,7 +319,6 @@ public class generation_mutation{
         int k = 0;
         double maxSimilarity = -1;
         double baseSimilarity = -1;
-        Random randGen = new Random();
         double[] scores;
         double[] sortedScores;
         while(k < generations && maxSimilarity < 1){
@@ -398,6 +396,66 @@ public class generation_mutation{
 
     // Main Class
     public static void main(String args[]){
+        Scanner scanner = new Scanner(System.in);
+        int generations = 300;
+        double pCross      = .99;
+        double pMutation   = .01;
+        boolean run     = false;
+        /* =============================================
+         * Read in Genetic Algorithm parameters.
+         * =============================================
+         */
+        
+        System.out.println("========================================");
+        System.out.println("========== GENETIC ALGORITHMS ==========");
+        System.out.println("========================================\n");
+        System.out.println("\nPlease enter a seed for the random generator: ");
+        String seed = scanner.next();
+        System.out.println("\nYou have chosen seed: " + seed);
+        randGen = new Random(Integer.parseInt(seed));
+        while(true){
+            System.out.println("\n===============================================================\n");
+            System.out.println("These are the current execution parameters:");
+            System.out.println("");
+            System.out.println("1) Generations: "            + generations);
+            System.out.println("2) Individuals: "            + pop);
+            System.out.println("3) Length of individuals: "  + length);
+            System.out.println("4) Length of tape: "         + tapeLength);
+            System.out.println("5) Cross-over probability: " + pCross);
+            System.out.println("6) Mutation probability: "   + pMutation);
+            System.out.println("===============================================================\n");
+            System.out.println("\nIs this correct? (y/n): ");
+            String shouldRun = scanner.next();
+            if(shouldRun.charAt(0) == 'y'){
+                break;
+            }else{
+                boolean again;
+                do{
+                    again = false;
+                    System.out.println("\nEnter a number to change the parameter: ");
+                    int optionChange = Integer.parseInt(scanner.next());
+                    switch (optionChange) {
+                    case 1:
+                        System.out.println("\nEnter the new value for Generations: ");
+                        generations = Integer.parseInt(scanner.next());
+                        break;
+                    case 2:
+                        System.out.println("\nEnter the new value for Individuals: ");
+                        pop = Integer.parseInt(scanner.next());
+                        break;
+                    default: 
+                        System.out.println("\nPlease enter a digit between 1 and 6");
+                        again = true;
+                        break;
+                    }
+                }while(again);
+            }
+        }
+        /* =============================================
+         * Read in Genetic Algorithm parameters.
+         * =============================================
+         */
+
         popGeneration();
         if(args.length > 0){
             verbose = true;
@@ -405,6 +463,6 @@ public class generation_mutation{
         // Objective code.
         int[] code = codeGeneration();
         System.out.println("\n ======= Genetic Algorithm ======== \n");
-        geneticAlg(300, code, 2, .99, .01);
+        geneticAlg(generations, code, 2, pCross, pMutation);
     }
 }
