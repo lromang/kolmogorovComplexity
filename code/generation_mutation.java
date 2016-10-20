@@ -304,6 +304,23 @@ public class generation_mutation{
         }
     }
 
+    public static int[] toAscii(String A){
+        byte[] bytes         = A.getBytes();
+        int[] binary_rep     = new int[8*A.length()];
+        int k                = 0;
+        StringBuilder binary = new StringBuilder();
+        for (byte b : bytes){
+                int val = b;
+                for (int i = 0; i < 8; i++){
+                    binary.append((val & 128) == 0 ? 0 : 1);
+                    binary_rep[k] = (val & 128) == 0 ? 0 : 1;
+                    val <<= 1;
+                    k++;
+                }
+            }
+        return binary_rep;
+    }
+
     public static void naturalSelection(int[] evaluationString, int cutPoint){
         double[] scores = evaluate(evaluationString);
         inSort(scores);
@@ -396,11 +413,11 @@ public class generation_mutation{
 
     // Main Class
     public static void main(String args[]){
-        Scanner scanner = new Scanner(System.in);
-        int generations = 300;
-        double pCross      = .99;
-        double pMutation   = .01;
-        boolean run     = false;
+        Scanner scanner  = new Scanner(System.in);
+        int generations  = 300;
+        double pCross    = .99;
+        double pMutation = .01;
+        boolean run      = false;
         /* =============================================
          * Read in Genetic Algorithm parameters.
          * =============================================
@@ -413,6 +430,11 @@ public class generation_mutation{
         String seed = scanner.next();
         System.out.println("\nYou have chosen seed: " + seed);
         randGen = new Random(Integer.parseInt(seed));
+        System.out.println("\nPlease enter a string to match: ");
+        String randomChar = scanner.next();
+        int[] code        = toAscii(randomChar);
+        // Adjust length of individuals.
+        tapeLength = randomChar.length()*8;
         while(true){
             System.out.println("\n===============================================================\n");
             System.out.println("These are the current execution parameters:");
@@ -420,10 +442,15 @@ public class generation_mutation{
             System.out.println("1) Generations: "            + generations);
             System.out.println("2) Individuals: "            + pop);
             System.out.println("3) Length of individuals: "  + length);
-            System.out.println("4) Length of tape: "         + tapeLength);
+            System.out.println("4) Length of tape (not recommended to change): "         + tapeLength);
             System.out.println("5) Cross-over probability: " + pCross);
             System.out.println("6) Mutation probability: "   + pMutation);
-            System.out.println("===============================================================\n");
+            System.out.println("7) Tape:\n");
+            for(int i = 0; i < randomChar.length()*8; i++){
+                            System.out.print(code[i]);
+            }
+            System.out.println("");
+            System.out.println("\n===============================================================\n");
             System.out.println("\nIs this correct? (y/n): ");
             String shouldRun = scanner.next();
             if(shouldRun.charAt(0) == 'y'){
@@ -443,8 +470,29 @@ public class generation_mutation{
                         System.out.println("\nEnter the new value for Individuals: ");
                         pop = Integer.parseInt(scanner.next());
                         break;
-                    default: 
-                        System.out.println("\nPlease enter a digit between 1 and 6");
+                    case 3:
+                        System.out.println("\nEnter the new value for Length of individuals: ");
+                        length = Integer.parseInt(scanner.next());
+                        break;
+                    case 4:
+                        System.out.println("\nEnter the new value for Length of tape: ");
+                        tapeLength = Integer.parseInt(scanner.next());
+                        break;
+                    case 5:
+                        System.out.println("\nEnter the new value for Cross-over probability: ");
+                        pCross = Double.parseDouble(scanner.next());
+                        break;
+                    case 6:
+                        System.out.println("\nEnter the new value for Mutation probability: ");
+                        pMutation = Double.parseDouble(scanner.next());
+                        break;
+                    case 7:
+                        System.out.println("\nEnter the new string to match: ");
+                        randomChar = scanner.next();
+                        code        = toAscii(randomChar);
+                        break;
+                    default:
+                        System.out.println("\nPlease enter a digit between 1 and 7");
                         again = true;
                         break;
                     }
@@ -461,7 +509,7 @@ public class generation_mutation{
             verbose = true;
         }
         // Objective code.
-        int[] code = codeGeneration();
+        // int[] code = codeGeneration();
         System.out.println("\n ======= Genetic Algorithm ======== \n");
         geneticAlg(generations, code, 2, pCross, pMutation);
     }
