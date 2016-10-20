@@ -237,6 +237,10 @@ public class generation_mutation{
                 System.out.println("\n Tape Position = " + position);
                 System.out.print("\n Current Instruction = [" + next_state/8  + "]: ");
             }
+            if(tape[position] == 1){
+                next_state = next_state*2;
+            }
+
             int i = 0;
             while(i < nStates){
                 state[i] = machineEncode[next_state + i];
@@ -247,6 +251,7 @@ public class generation_mutation{
             }
             // Start reading code
             next_state = ((int)decode(state)) * 8;
+
             if(verbose == true){
                 System.out.println("\n Next State = " + next_state/8);
             }
