@@ -11,7 +11,7 @@
  * -----------------------------------------
  *
  */
-
+import java.util.*;
 import java.util.Random;
 import java.lang.Math;
 import java.util.Scanner;
@@ -28,6 +28,7 @@ public class generation_mutation{
     public static int seed           = 1234;
     public static int MaxPop         = 100000;
     public static int tapeLength     = 10;
+    public static int minVisitStates = 64;
     public static Random randGen     = new Random(seed);
     public static int[][] population = new int[MaxPop][length];
     public static boolean verbose    = false;
@@ -218,8 +219,9 @@ public class generation_mutation{
      */
     public static int[] turingMachine(int machineIndex, int maxIters, int nStates, int tapeLength){
         int [] machineEncode  = population[machineIndex];
-        int[] tape     = new int[tapeLength];  // Tape.
-        int   position = (int) (tapeLength / 2);  // Track position in tape.
+        int[] tape     = new int[tapeLength + 1];  // Tape.
+        int   position = (int) ((tapeLength + 1) / 2);  // Track position in tape.
+        Set<Integer> visitedStates = new HashSet<Integer>();
         int   k        = 0;    // Operation counter
         nStates = (int)(Math.log(nStates) / Math.log(2)); // pass to log 2
         int[] state    = new int[nStates]; // state
@@ -229,7 +231,7 @@ public class generation_mutation{
             System.out.print("\nMachine Simulation ");
             System.out.println("\n==================================================================");
         }
-        while(k < maxIters && position < tape.length && position > 0){
+        while(k < maxIters && position < tape.length && position > 1){
             if(verbose == true){
                 System.out.println("\n ========================================= ");
                 System.out.println("\n Machine = [" + machineIndex +"]");
@@ -240,7 +242,8 @@ public class generation_mutation{
             if(tape[position] == 1){
                 next_state = next_state*2;
             }
-
+            // Add visited states.
+            visitedStates.add(next_state);
             int i = 0;
             while(i < nStates){
                 state[i] = machineEncode[next_state + i];
@@ -272,13 +275,24 @@ public class generation_mutation{
                 printTape(tape);
             }
         }
+        /*if(visitedStates.size() < minVisitStates){
+            minVisitStates = visitedStates.size();
+        }
+        */
+        tape[0] = visitedStates.size();
         return tape;
     }
 
     public static double[] evaluate(int[] evaluationString){
         double[] fit = new double[pop];
+        int[] turingString = new int[tapeLength];
+        // Evaluate
         for(int i = 0; i < pop; i++){
-            fit[i] = fitness(turingMachine(i, 100, 64, tapeLength), evaluationString);
+            int[] aux = turingMachine(i, 100, 64, tapeLength);
+            for(int j = 1; j < tapeLength + 1; j++){
+                turingString[j - 1] = aux[j];
+            }
+            fit[i] = fitness(turingString, evaluationString);
         }
         return fit;
     }
@@ -403,7 +417,7 @@ public class generation_mutation{
         System.out.println("");
         int[] finalString = turingMachine(0, 100, 64, tapeLength);
         System.out.println("\n Closest String: ");
-        for(int i = 0; i < finalString.length; i++){
+        for(int i = 1; i < finalString.length; i++){
             if(i % 10 == 0){
                 System.out.println("");
             }
@@ -411,6 +425,8 @@ public class generation_mutation{
         }
         System.out.println("");
         System.out.println("\nSimilarity: " + maxSimilarity);
+        System.out.println("\nNumber of valid states: " + finalString[0]);
+        System.out.println("\nKolmogorov Complexity: " + finalString[0]*16);
         System.out.printf("Improvement from first generation: %.2f",  (maxSimilarity/baseSimilarity - 1)*100);
         System.out.println("%");
         System.out.println("\n===================================================\n");
@@ -447,7 +463,7 @@ public class generation_mutation{
             System.out.println("1) Generations: "            + generations);
             System.out.println("2) Individuals: "            + pop);
             System.out.println("3) Length of individuals: "  + length);
-            System.out.println("4) Length of tape (not recommended to change): "         + tapeLength);
+            System.out.println("4) Length of tape (not recommended to change): " + tapeLength);
             System.out.println("5) Cross-over probability: " + pCross);
             System.out.println("6) Mutation probability: "   + pMutation);
             System.out.println("7) Tape:\n");
@@ -494,7 +510,8 @@ public class generation_mutation{
                     case 7:
                         System.out.println("\nEnter the new string to match: ");
                         randomChar = scanner.next();
-                        code        = toAscii(randomChar);
+                        tapeLength = randomChar.length()*8;
+                        code       = toAscii(randomChar);
                         break;
                     default:
                         System.out.println("\nPlease enter a digit between 1 and 7");
